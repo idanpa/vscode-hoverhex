@@ -5,15 +5,16 @@ export function activate(context: vscode.ExtensionContext) {
     let aa = vscode.languages.registerHoverProvider({scheme: '*', language: '*'}, {
         provideHover(document, position, token) {
             const hoveredWord = document.getText(document.getWordRangeAtPosition(position));
-            if (/^0x[0-9a-fA-F]+$/g.test(hoveredWord)) {
-                var x = parseInt(hoveredWord, 16);
+            let resultArr = /^(0x[0-9a-fA-F]+)[Uu]?[Ll]{0,2}$/g.exec(hoveredWord);
+            if (resultArr) {
+                var x = parseInt(resultArr[1], 16);
                 var splitWord = [];
-                var len = hoveredWord.length;
+                var len = resultArr[1].length;
 
                 for(var i = len; i > 6; i -= 4) {
-                    splitWord.push(hoveredWord.substr(i - 4, 4))
+                    splitWord.push(resultArr[1].substr(i - 4, 4))
                 }
-                splitWord.push(hoveredWord.substr(0, i))
+                splitWord.push(resultArr[1].substr(0, i))
 
                 return new vscode.Hover( splitWord.reverse().join("_") + ' = ' + x);
             }
